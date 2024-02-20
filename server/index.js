@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-
+import axios from 'axios';
 
 const app = express();
 const port = 9000;
@@ -16,16 +16,22 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
     res.send("Hello Wolrd!")
 });
-
-
-app.get('/login', (req, res) => {
-    res.send("Hello Wolrd!")
+//              Login Routes 
+app.post('/login', (req, res) => {
+    req.send(req.body)
+    
 });
 
-app.get('/signup', (req, res) => {
-    res.send("Hello Wolrd!")
+
+//              Register Routes 
+app.post('/signup', (req, res) => {
+    req.send("Hello Wolrd!")
 });
 
+
+
+
+// 
 app.listen(port, () => {
     console.log("App Started listening")
 });
