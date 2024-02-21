@@ -1,3 +1,11 @@
 .login-form{ 
   height: 100vh;
 }
+
+.nav-container { 
+  background-color: aqua;
+}
+.card-details{
+  width: 40vh;
+
+}
