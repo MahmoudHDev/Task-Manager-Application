@@ -12,20 +12,21 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
 app.get('/', (req, res) => {
     res.send("Hello Wolrd!")
 });
 //              Login Routes 
-app.post('/login', (req, res) => {
-    req.send(req.body)
-    
+
+app.post('/login', async (req, res) => {
+    console.log(req.body);
 });
 
-
 //              Register Routes 
-app.post('/signup', (req, res) => {
-    req.send("Hello Wolrd!")
+app.post('/register', (req, res) => {
+    console.log(req.body);
+});
+app.get('/register', (req, res) => {
+    res.send("Hellllooo REg");
 });
 
 
