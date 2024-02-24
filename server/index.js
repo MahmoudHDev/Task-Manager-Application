@@ -8,17 +8,21 @@ import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import session from 'express-session';
 import connectEnsureLogin from 'connect-ensure-login';
-
+import 'dotenv/config';
+import bcrypt from 'bcrypt';
 
 const app = express();
 const port = 9000;
+const saltRounds  = process.env.SALT_ROUNDS;
+
+
 mongoose.connect('mongodb://127.0.0.1:27017/UserTasks');
 app.set('trust proxy', 1)
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(session({
-    secret: 'keyboard cat',
+    secret: process.env.PASSPORT_SEC,
     resave: false,
     saveUninitialized: true,
     cookie: { secure: true }
@@ -108,8 +112,10 @@ app.post('/register', (req, res) => {
             }))
         }
     })
-
-
+// REQUIRED
+// bcrypt.hash(myPlaintextPassword, saltRounds).then(function(hash) {
+//     // Store hash in your password DB.
+// });
 });
 
 app.get('/register', (req, res) => {
