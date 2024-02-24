@@ -3,14 +3,20 @@
 }
 
 .nav-container {
-  background-color: aqua;
-}
-
-.nav-container {
+  background-color:black;
+  color: white;
+  padding-right:10% ;
+  padding-left:10% ;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 10vh;
+}
+
+.nav-container>a { 
+  font-size: 1.5rem;
+  color: red;
+  text-decoration: none;
 }
 
 .home-container{ 
@@ -35,6 +41,18 @@
   color: black;
   list-style-type: circle;
 }
-.tasks-list>li {
+.selected-li {
   cursor: pointer;
+  list-style-type: none;
+}
+
+.note-input{ 
+  background: transparent;
+  border: none;
+}
+.add-btn{ 
+  border-radius: 50%;
+}
+.del-btn{ 
+  border-radius: 50%;
 }

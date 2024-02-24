@@ -1,7 +1,10 @@
 import { useState } from "react";
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+    const navigate = useNavigate()
+
     const regURI = 'http://localhost:9000/register'
     const [newUserInfo, setNewUserInfo] = useState({});
 
@@ -17,13 +20,15 @@ const Register = () => {
         handleRegister()
     }
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         try {
-            const response = axios.post(regURI, newUserInfo)
-            if (response.data) {
+            const response = await axios.post(regURI, newUserInfo)
+            console.log(response.data);
+            if (response.data.success === true) {
                 console.log('Success')
+                navigate('/home')
             } else {
-                console.log('Error Has been occured')
+                console.log(response.data.errorMessage.message)
             }
         } catch (error) {
             console.log("Error has been occured from posting")

@@ -25,7 +25,7 @@ const Login = () => {
             const response = await axios.post(loginURI, userInfo)
             if (response.data) {
                 console.log("successfully login");
-                console.log(response.data._doc);
+
             } else {
                 console.log("Wrong Email or password");
             }
@@ -40,9 +40,9 @@ const Login = () => {
                 <label className="form-label">Email address</label>
                 <input type="email" className="form-control"
                     id="InputEmail1"
-                    name='email'
+                    name='username'
                     onChange={handleChange}
-                    value={userInfo.email || ''}
+                    value={userInfo.username || ''}
                 />
                 <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
             </div>
