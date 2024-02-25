@@ -13,7 +13,7 @@ import bcrypt from 'bcrypt';
 
 const app = express();
 const port = 9000;
-const saltRounds  = process.env.SALT_ROUNDS;
+const saltRounds = 10;
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/UserTasks');
@@ -49,19 +49,14 @@ passport.use(new LocalStrategy(
         User.findOrCreate({ username: username }, function (err, user, created) {
             // created will be false here
             console.log(user);
-            if (err){ 
+            if (err) {
                 console.log('error ' + err);
-            }else{ 
-   
+            } else {
+                console.log('successfully done');
             }
-            
-
-
-        }) 
-
+        })
     }
 ));
-
 
 // Serialize user into the session
 passport.serializeUser(function (user, done) {
@@ -74,7 +69,6 @@ passport.deserializeUser(function (id, done) {
         done(err, user);
     });
 });
-
 
 // API
 app.get('/', (req, res) => {
@@ -94,28 +88,25 @@ app.get('/logout', (req, res) => {
 })
 
 //              Register Routes 
-app.post('/register', (req, res) => {
-    console.log(req.body);
-    User.register({
-        username: req.body.email,
-        fName: req.body.fName,
-        lName: req.body.lName,
-    }, req.body.password, (err, user) => {
-        if (err) {
-            console.log(err)
-            res.send({ success: false, errorMessage: err })
-        } else {
-            res.send({ success: true })
-            console.log("successfully registered")
-            passport.authenticate('local', (req, res, () => {
-                console.log("Redirect to the home or profile page")
-            }))
-        }
-    })
-// REQUIRED
-// bcrypt.hash(myPlaintextPassword, saltRounds).then(function(hash) {
-//     // Store hash in your password DB.
-// });
+app.post('/register', async (req, res) => {
+    try {
+        const hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+        User.register({
+            username: req.body.email,
+            fName: req.body.fName,
+            lName: req.body.lName,
+        }, hashedPassword, (err, user) => {
+            if (err) {
+                console.log(err)
+                res.send({ success: false, errorMessage: err })
+            } else {
+                console.log("successfully registered" + user)
+                res.send({ success: true })
+            }
+        })
+    } catch (error) {
+        console.log("Error has been occured when hashin password")
+    }
 });
 
 app.get('/register', (req, res) => {
@@ -140,3 +131,9 @@ app.listen(port, () => {
 // } else {
 //     return done(null, user);
 // }
+
+// passport.authenticate('local', (req, res, () => {
+//     console.log("Redirect to the home or profile page")
+//     res.send({ success: true })
+// }))
+
