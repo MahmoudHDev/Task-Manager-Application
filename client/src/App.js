@@ -1,4 +1,5 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom';
+
 import Login from './components/Login.js';
 import Register from './components/Register.js';
 import NotFound from './components/NotFound.js';
@@ -13,7 +14,9 @@ function App() {
         <Route path='/' element={<Main />}></Route>
         <Route path='/login' element={<Login />}></Route>
         <Route path='/register' element={<Register />}></Route>
+                {/*wrap it in a privateRoute  */}
         <Route path='/home' element={<Home />}></Route>
+
         <Route path='*' element={<NotFound />}></Route>
       </Routes>
     </div>

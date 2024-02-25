@@ -26,7 +26,7 @@ const Register = () => {
             console.log(response.data);
             if (response.data.success === true) {
                 console.log('Success')
-                navigate('/')
+                navigate('/home')
             } else {
                 console.log(response.data.errorMessage.message)
             }
