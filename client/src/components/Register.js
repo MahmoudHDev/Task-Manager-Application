@@ -73,10 +73,10 @@ const Register = () => {
                         Email
                         <input type="email"
                             id="email"
-                            name="email"
+                            name="username"
                             className="form-control"
                             onChange={handleChange}
-                            value={newUserInfo.email || ''}
+                            value={newUserInfo.username || ''}
                         />
                     </label>
                 </div>

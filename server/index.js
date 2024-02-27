@@ -8,6 +8,7 @@ import passportLocalMongoose from 'passport-local-mongoose';
 // import LocalStrategy from 'passport-local'
 import session from 'express-session';
 import 'dotenv/config';
+import { compareSync } from 'bcrypt';
 const app = express();
 const port = 9000;
 const saltRounds = 10;
@@ -34,7 +35,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/UserTasks');
 // 3- Schema
 const UserSchema = new mongoose.Schema({
     username: String,
-    password: String
+    password: String,
 });
 
 // 2- Any Plugins to add
@@ -58,6 +59,27 @@ app.get('/', (req, res) => {
 
 app.post('/login', (req, res) => {
 
+    const user = new User({
+        username: req.body.username,
+        password: req.body.password
+    })
+    req.login(user,(err)=> { 
+        if (err) { 
+            console.log(err)
+        }else{
+            passport.authenticate("local", function (err, user, info) {
+                // handle succes or failure
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log('redirect user to home ')
+                    console.log("Cookies created")
+                    console.log(user)
+                }
+            })(req, res)
+        }
+    })
+
 })
 
 //             Logout
@@ -80,19 +102,17 @@ app.post('/register', async (req, res) => {
             // Auth User
             console.log("Create Cookies")
             passport.authenticate("local", function (err, user, info) {
-
                 // handle succes or failure
                 if (err) {
                     console.log(err)
                 } else {
                     console.log('redirect user to home ')
                     console.log("Cookies created")
-
+                    console.log(user)
                 }
             })(req, res)
         }
     })
-
 });
 
 //              Home
