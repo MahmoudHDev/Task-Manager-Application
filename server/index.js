@@ -3,39 +3,37 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import findOrCreate from 'mongoose-findorcreate';
-import passportLocalMongoose from 'passport-local-mongoose';
 import passport from 'passport';
-import LocalStrategy from 'passport-local';
+import passportLocalMongoose from 'passport-local-mongoose';
+// import LocalStrategy from 'passport-local'
 import session from 'express-session';
 import 'dotenv/config';
-import bcrypt from 'bcrypt';
-
 const app = express();
 const port = 9000;
 const saltRounds = 10;
 
-
-mongoose.connect('mongodb://127.0.0.1:27017/UserTasks');
-
-app.set('trust proxy', 1)
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(express.json());
 
-// Manage Session middle-ware
+// 1- Manage Session middle-ware   "express-session "
+app.set('trust proxy', 1)
 app.use(session({
     secret: process.env.PASSPORT_SEC,
     resave: false,
     saveUninitialized: false,
 }));
+
+// 2- init passport & use session
 app.use(passport.initialize());
 app.use(passport.session());
+
+mongoose.connect('mongodb://127.0.0.1:27017/UserTasks');
 // DB  
-// 1- Schema
+// 3- Schema
 const UserSchema = new mongoose.Schema({
     username: String,
-    fName: String,
-    lName: String,
     password: String
 });
 
@@ -46,55 +44,21 @@ UserSchema.plugin(findOrCreate);
 // 3- Model
 const User = mongoose.model('User', UserSchema);
 
-passport.use(new LocalStrategy(
-    async function (username, password, done) {
-        await User.findOrCreate({ username: username }, function (err, user) {
-            console.log(user);
-            if (err) {
-                console.log('error ' + err);
-            }
-            if (!user) {
-                console.log('Incorrect username');
-                return done(null, false, { message: 'Incorrect username.' });
-            }
-            bcrypt.compare(password, user.password, (err, result) => {
-                if (err) {
-                    return done(err);
-                }
-                if (result) {
-                    // Passwords match, authentication successful
-                    return done(null, user);
-                } else {
-                    // Passwords do not match
-                    return done(null, false, { message: 'Incorrect password.' });
-                }
-            });
-        });
-    }
-));
+// Strategy
+// CHANGE: USE "createStrategy" INSTEAD OF "authenticate"
+passport.use(User.createStrategy());
 
-// Serialize user into the session
-passport.serializeUser(function (user, done) {
-    done(null, user.id);
-});
-
-// Deserialize user from the session
-passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
-        done(err, user);
-    });
-});
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // API
 app.get('/', (req, res) => {
     res.send("Hello Wolrd!")
 });
 
-app.post('/login', passport.authenticate('local', {
-    successRedirect: '/home', // Redirect to dashboard on successful login
-    failureRedirect: '/login', // Redirect back to login page on failure
-    failureFlash: true // Enable flashing messages for failed login attempts (optional)
-}));
+app.post('/login', (req, res) => {
+
+})
 
 //             Logout
 app.get('/logout', (req, res) => {
@@ -104,34 +68,31 @@ app.get('/logout', (req, res) => {
 
 //              Register Routes 
 app.post('/register', async (req, res) => {
-    try {
-        const hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
-        User.register({
-            username: req.body.email,
-            fName: req.body.fName,
-            lName: req.body.lName,
-            active: false
-        }, hashedPassword, (err, user) => {
-            if (err) {
-                console.log(err)
-                res.send({ success: false, errorMessage: err })
-            }
-            const authenticate = User.authenticate('local');
 
-            authenticate('username', hashedPassword, (err, result) => {
+    const { username, password } = req.body
+    console.log(username, password)
+
+    User.register({ username: username }, password, function (err, user) {
+        if (err) {
+            console.log(err)
+            res.send("Send Back to register")
+        } else {
+            // Auth User
+            console.log("Create Cookies")
+            passport.authenticate("local", function (err, user, info) {
+
+                // handle succes or failure
                 if (err) {
                     console.log(err)
                 } else {
-                    res.send({ success: true })
-                    console.log("Redirect the use ")
+                    console.log('redirect user to home ')
+                    console.log("Cookies created")
+
                 }
+            })(req, res)
+        }
+    })
 
-            })
-
-        })
-    } catch (error) {
-        console.log("Error has been occured when hashin password")
-    }
 });
 
 //              Home
@@ -144,6 +105,17 @@ app.get('/home', async (req, res) => {
     };
 });
 
+
+// route middleware to make sure a user is logged in
+function isLoggedIn(req, res, next) {
+
+    // if user is authenticated in the session, carry on
+    if (req.isAuthenticated())
+        return next();
+
+    // if they aren't redirect them to the home page
+    res.redirect('/');
+}
 
 // PORT || 9000
 app.listen(port, () => {
