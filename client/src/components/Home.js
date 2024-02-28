@@ -1,30 +1,33 @@
 import '../App.css';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+
+
 
 const Home = () => {
 
-    const username = "X"       // needs to edit
+    const [FullName, setUserName] = useState('x')   // needs to edit
     const arrTasks = ['Task1', 'Task2', 'Task3', 'Task4']
     const homeURI = 'http://localhost:9000/home'
-
+    const state = useLocation();         // receiving component from use navigator 
     const [selectedItemIndex, setSelectedItemIndex] = useState(null);
 
     const handleTaps = (index) => {
         setSelectedItemIndex(index)
     }
+
     useEffect(() => {
         //Runs only on the first render
-        const fetchListArr = async () => { 
+        setUserName(state.state.fName);
+        const fetchListArr = async () => {
             console.log("Fetching")
-            try{ 
+            try {
                 const response = await axios.get(homeURI)
                 console.log(response.data)
-            }catch (error){ 
+            } catch (error) {
                 console.log("Error from server" + error)
             }
-            
         }
         fetchListArr()
     }, []);
@@ -32,7 +35,7 @@ const Home = () => {
 
     return (<>
         <nav className="nav-container d-flex justify-content-between">
-            <h1 className="text-center">Hello {username}</h1>
+            <h1 className="text-center">Hello {FullName}</h1>
             <Link to={'/logout'}>Logout</Link>
         </nav>
         <div className="container d-flex flex-column justify-content-center align-items-center home-container">

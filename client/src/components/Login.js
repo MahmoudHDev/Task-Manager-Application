@@ -1,6 +1,7 @@
 import '../App.css'
 import { useState } from 'react'
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
 
@@ -8,6 +9,8 @@ const Login = () => {
     const loginURI = 'http://localhost:9000/login';
 
     const [userInfo, setUserInfo] = useState({})
+    const navigate = useNavigate();
+
 
     const handleChange = (e) => {
         const name = e.target.name;
@@ -24,10 +27,12 @@ const Login = () => {
         try {
             const response = await axios.post(loginURI, userInfo)
             if (response.data) {
-                console.log("successfully login");
-
+                const data = response.data;
+                console.log(data)
+                navigate('/home', { state: data.user})
             } else {
-                console.log("Wrong Email or password");
+                const data = response.data;
+                console.log(data.message)
             }
         } catch (error) {
             console.log("Error has been occured while login" + error);

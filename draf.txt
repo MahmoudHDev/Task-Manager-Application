@@ -60,3 +60,46 @@
         });
     }
 ));
+
+
+
+--------------------
+
+
+
+reg user:
+//              Register Routes 
+app.post('/register', async (req, res) => {
+
+    const { username, password } = req.body
+    console.log(username, password)
+
+    User.register({ username: username }, password, function (err, user) {
+        if (err) {
+            console.log(err)
+            res.send("Send Back to register")
+        } else {
+            // Auth User
+            console.log("Create Cookies")
+            passport.authenticate("local", function (err, user, info) {
+                // handle succes or failure
+                if (err) { console.log(err) }
+                if (user != false) {
+                    res.send({
+                        success: true,
+                        message: 'Successfully registerd',
+                        user: {
+                            _id: user._id,
+                            username: user.username
+                        }
+                    })
+                } else {
+                    res.send({
+                        success: false,
+                        message: 'Password incorrect, Please check it again!'
+                    })
+                }
+            })(req, res)
+        }
+    })
+});

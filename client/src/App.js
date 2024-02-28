@@ -14,7 +14,7 @@ function App() {
         <Route path='/' element={<Main />}></Route>
         <Route path='/login' element={<Login />}></Route>
         <Route path='/register' element={<Register />}></Route>
-                {/*wrap it in a privateRoute  */}
+        {/*wrap it in a privateRoute  */}
         <Route path='/home' element={<Home />}></Route>
 
         <Route path='*' element={<NotFound />}></Route>

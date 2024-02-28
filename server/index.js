@@ -19,7 +19,6 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 // 1- Manage Session middle-ware   "express-session "
-app.set('trust proxy', 1)
 app.use(session({
     secret: process.env.PASSPORT_SEC,
     resave: false,
@@ -35,6 +34,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/UserTasks');
 // 3- Schema
 const UserSchema = new mongoose.Schema({
     username: String,
+    fName: String,
+    lName: String,
     password: String,
 });
 
@@ -57,44 +58,13 @@ app.get('/', (req, res) => {
     res.send("Hello Wolrd!")
 });
 
-app.post('/login', (req, res) => {
-
-    const user = new User({
-        username: req.body.username,
-        password: req.body.password
-    })
-    req.login(user,(err)=> { 
-        if (err) { 
-            console.log(err)
-        }else{
-            passport.authenticate("local", function (err, user, info) {
-                // handle succes or failure
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log('redirect user to home ')
-                    console.log("Cookies created")
-                    console.log(user)
-                }
-            })(req, res)
-        }
-    })
-
-})
-
-//             Logout
-app.get('/logout', (req, res) => {
-    // Handle the logout
-    req.logOut()
-})
-
 //              Register Routes 
 app.post('/register', async (req, res) => {
 
-    const { username, password } = req.body
+    const { username, password, fName, lName } = req.body
     console.log(username, password)
 
-    User.register({ username: username }, password, function (err, user) {
+    User.register({ username: username, fName: fName, lName: lName }, password, function (err, user) {
         if (err) {
             console.log(err)
             res.send("Send Back to register")
@@ -103,17 +73,73 @@ app.post('/register', async (req, res) => {
             console.log("Create Cookies")
             passport.authenticate("local", function (err, user, info) {
                 // handle succes or failure
-                if (err) {
-                    console.log(err)
+                if (err) { console.log("Before user!=" + err) }
+                if (user != false) {
+                    res.send({
+                        success: true,
+                        message: 'Successfully registerd',
+                        user: {
+                            _id: user._id,
+                            username: user.username,
+                            fName: user.fName, lName: user.lName
+                        }
+                    })
                 } else {
-                    console.log('redirect user to home ')
-                    console.log("Cookies created")
-                    console.log(user)
+                    res.send({
+                        success: false,
+                        message: 'Password incorrect, Please check it again!'
+                    })
                 }
             })(req, res)
         }
     })
 });
+
+
+
+
+
+app.post('/login', (req, res) => {
+
+    const user = new User({
+        username: req.body.username,
+        password: req.body.password
+    })
+    req.login(user, (err) => {
+        if (err) {
+            console.log(err)
+        } else {
+            passport.authenticate("local", function (err, user, info) {
+                // handle succes or failure
+                if (err) { console.log(err) }
+                if (user != false) {
+                    res.send({
+                        success: true,
+                        message: 'Successfully logged',
+                        user: {
+                            user: user._id,
+                            username: user.username,
+                            fName: user.fName, lName: user.lName
+                        }
+                    })
+                } else {
+                    res.send({
+                        success: false,
+                        message: 'Password incorrect, Please check it again!'
+                    })
+                }
+            })(req, res)
+        }
+    })
+});
+
+//             Logout
+app.get('/logout', (req, res) => {
+    // Handle the logout
+    req.logOut()
+    res.send("Logging out")
+});
+
 
 //              Home
 app.get('/home', async (req, res) => {
