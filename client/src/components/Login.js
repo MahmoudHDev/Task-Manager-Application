@@ -28,8 +28,9 @@ const Login = () => {
             const response = await axios.post(loginURI, userInfo)
             if (response.data) {
                 const data = response.data;
+                console.log('data from login');
                 console.log(data)
-                navigate('/home', { state: data.user})
+                navigate('/home', { state: {data: data.user, } , src: 'loginPage'})
             } else {
                 const data = response.data;
                 console.log(data.message)

@@ -25,8 +25,8 @@ const Register = () => {
             const response = await axios.post(regURI, newUserInfo)
             const data = response.data
             if (response.data.success === true) {
-                console.log('Success')
-                navigate('/home', { state: data.user})
+                console.log('Success' + data)
+                navigate('/home', { state: { data: data.user, src: 'loginPage' } })
             } else {
                 console.log(response.data.errorMessage.message)
             }

@@ -9,7 +9,7 @@ const Home = () => {
 
     const [FullName, setUserName] = useState('x')   // needs to edit
     const arrTasks = ['Task1', 'Task2', 'Task3', 'Task4']
-    const homeURI = 'http://localhost:9000/home'
+    const homeURI = 'http://localhost:9000/home';
     const state = useLocation();         // receiving component from use navigator 
     const [selectedItemIndex, setSelectedItemIndex] = useState(null);
 
@@ -19,7 +19,18 @@ const Home = () => {
 
     useEffect(() => {
         //Runs only on the first render
-        setUserName(state.state.fName);
+        const sourcePage = state.state.data.source;
+        
+        if (sourcePage === 'loginPage') { 
+            console.log("this source is Login Page ");
+            console.log(state.state.data.fName);
+        }else{ 
+            console.log("this source is register Page ");
+            console.log(state.state.data.fName);
+  
+        }
+        setUserName(state.state.data.fName);
+
         const fetchListArr = async () => {
             console.log("Fetching")
             try {
@@ -29,6 +40,7 @@ const Home = () => {
                 console.log("Error from server" + error)
             }
         }
+
         fetchListArr()
     }, []);
 
@@ -53,7 +65,6 @@ const Home = () => {
                             <button className="btn btn-warning del-btn">-</button>
                         </div>
                     ))}
-
                     <form action='/home' method='post'>
                         <div className="input-group mb-3">
                             <input type="text" className="form-control note-input" placeholder="Write something" />

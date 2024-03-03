@@ -31,13 +31,18 @@ app.use(passport.session());
 
 mongoose.connect('mongodb://127.0.0.1:27017/UserTasks');
 // DB  
-// 3- Schema
+// 3- Schemas
 const UserSchema = new mongoose.Schema({
-    username: String,
-    fName: String,
-    lName: String,
-    password: String,
+    userID: String,
+
 });
+
+const UserDocsSchema = new mongoose.Schema({
+    userID: String,
+    date: String,
+    docs: [String]
+});
+
 
 // 2- Any Plugins to add
 UserSchema.plugin(passportLocalMongoose);
@@ -45,6 +50,8 @@ UserSchema.plugin(findOrCreate);
 
 // 3- Model
 const User = mongoose.model('User', UserSchema);
+
+const UserDocs = mongoose.model('UserDocs', UserDocsSchema);
 
 // Strategy
 // CHANGE: USE "createStrategy" INSTEAD OF "authenticate"
@@ -70,18 +77,19 @@ app.post('/register', async (req, res) => {
             res.send("Send Back to register")
         } else {
             // Auth User
-            console.log("Create Cookies")
+            console.log("Create Cookies")       // Cookies need create
             passport.authenticate("local", function (err, user, info) {
                 // handle succes or failure
                 if (err) { console.log("Before user!=" + err) }
                 if (user != false) {
+
+                    // Create a new doc in the db:
+                    console.log(user)
                     res.send({
                         success: true,
                         message: 'Successfully registerd',
                         user: {
-                            _id: user._id,
-                            username: user.username,
-                            fName: user.fName, lName: user.lName
+                            user
                         }
                     })
                 } else {
@@ -94,9 +102,6 @@ app.post('/register', async (req, res) => {
         }
     })
 });
-
-
-
 
 
 app.post('/login', (req, res) => {
@@ -113,14 +118,12 @@ app.post('/login', (req, res) => {
                 // handle succes or failure
                 if (err) { console.log(err) }
                 if (user != false) {
+
+                    console.log("Sending the object to the user")
                     res.send({
                         success: true,
                         message: 'Successfully logged',
-                        user: {
-                            user: user._id,
-                            username: user.username,
-                            fName: user.fName, lName: user.lName
-                        }
+                        user
                     })
                 } else {
                     res.send({
