@@ -8,10 +8,10 @@ import passportLocalMongoose from 'passport-local-mongoose';
 // import LocalStrategy from 'passport-local'
 import session from 'express-session';
 import 'dotenv/config';
-import { compareSync } from 'bcrypt';
 const app = express();
 const port = 9000;
-const saltRounds = 10;
+import { v4 as uuidv4 } from 'uuid';
+
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -118,8 +118,11 @@ app.post('/login', (req, res) => {
                 // handle succes or failure
                 if (err) { console.log(err) }
                 if (user != false) {
+                    // Create the doc
+                    
 
-                    console.log("Sending the object to the user")
+
+
                     res.send({
                         success: true,
                         message: 'Successfully logged',
@@ -169,4 +172,6 @@ function isLoggedIn(req, res, next) {
 // PORT || 9000
 app.listen(port, () => {
     console.log("App Started listening")
+    console.log(uuidv4());
 });
+

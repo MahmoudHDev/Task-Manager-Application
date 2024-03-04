@@ -1,7 +1,7 @@
 import '../App.css'
 import { useState } from 'react'
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
 
@@ -28,9 +28,7 @@ const Login = () => {
             const response = await axios.post(loginURI, userInfo)
             if (response.data) {
                 const data = response.data;
-                console.log('data from login');
-                console.log(data)
-                navigate('/home', { state: {data: data.user, } , src: 'loginPage'})
+                navigate('/home', { state: data.user })
             } else {
                 const data = response.data;
                 console.log(data.message)
@@ -39,8 +37,8 @@ const Login = () => {
             console.log("Error has been occured while login" + error);
         }
     }
-
-    return (<div className="container d-flex justify-content-center align-items-center login-form">
+    return (<div className="container d-flex justify-content-center align-items-center login-form flex-column  ">
+        <h1>Welcome Again!</h1>
         <form action='/login' method='post' onSubmit={handleSubmit}>
             <div className="mb-3">
                 <label className="form-label">Email address</label>
@@ -65,8 +63,11 @@ const Login = () => {
                 <input type="checkbox" className="form-check-input" id="exampleCheck1" />
                 <label className="form-check-label">Remember me</label>
             </div>
+            <p>Don't have an account?  <Link to={'/register'}>Register</Link> </p>
+
             <button type="submit" className="btn btn-primary">Submit</button>
         </form>
+
     </div>)
 }
 export default Login

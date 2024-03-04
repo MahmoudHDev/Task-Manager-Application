@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Register = () => {
     const navigate = useNavigate()
@@ -26,7 +26,7 @@ const Register = () => {
             const data = response.data
             if (response.data.success === true) {
                 console.log('Success' + data)
-                navigate('/home', { state: { data: data.user, src: 'loginPage' } })
+                navigate('/login')
             } else {
                 console.log(response.data.errorMessage.message)
             }
@@ -37,7 +37,8 @@ const Register = () => {
 
     return (<>
         <br></br>
-        <div className="container d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="container d-flex justify-content-center align-items-center flex-column" style={{ height: '100vh' }}>
+            <h1>Register New User</h1>
             <form action="/register" method="post" onSubmit={handleSubmit}>
                 <div className="input-group">
                     <label id="firstname" >
@@ -96,6 +97,7 @@ const Register = () => {
                     </label>
                 </div>
                 <br></br>
+                <p>Already a member? <Link to={'/login'}>Login</Link></p>
                 <button className="btn btn-primary">Register</button>
             </form>
 

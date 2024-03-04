@@ -9,28 +9,32 @@ const Home = () => {
 
     const [FullName, setUserName] = useState('x')   // needs to edit
     const arrTasks = ['Task1', 'Task2', 'Task3', 'Task4']
+    const arrObjTasks = [{ title: 'Task1', strikeThrough: false },
+    { title: 'Task2', strikeThrough: false },
+    { title: 'Task3', strikeThrough: false }]
+
+
+
+
+
     const homeURI = 'http://localhost:9000/home';
     const state = useLocation();         // receiving component from use navigator 
     const [selectedItemIndex, setSelectedItemIndex] = useState(null);
 
     const handleTaps = (index) => {
         setSelectedItemIndex(index)
+        console.log(index)
+    }
+
+    const handledelete = (index) => {
+
+        console.log("Delete this index from DB" + index)
     }
 
     useEffect(() => {
         //Runs only on the first render
-        const sourcePage = state.state.data.source;
-        
-        if (sourcePage === 'loginPage') { 
-            console.log("this source is Login Page ");
-            console.log(state.state.data.fName);
-        }else{ 
-            console.log("this source is register Page ");
-            console.log(state.state.data.fName);
-  
-        }
-        setUserName(state.state.data.fName);
 
+        setUserName(state.state.fName);
         const fetchListArr = async () => {
             console.log("Fetching")
             try {
@@ -40,10 +44,8 @@ const Home = () => {
                 console.log("Error from server" + error)
             }
         }
-
         fetchListArr()
     }, []);
-
 
     return (<>
         <nav className="nav-container d-flex justify-content-between">
@@ -57,18 +59,18 @@ const Home = () => {
                     {arrTasks.map((item, index) => (
                         <div className='d-flex justify-content-between'>
                             <li
-                                style={selectedItemIndex === index ? { color: 'red' } : { color: 'black' }}
+                                style={selectedItemIndex === index ? { textDecoration: "line-through" } : { textDecoration: 'none' }}
                                 key={index}
                                 class='selected-li'
                                 onClick={() => handleTaps(index)}
                             >{item}</li>
-                            <button className="btn btn-warning del-btn">-</button>
+                            <button className="btn btn-outline del-btn" onClick={() => handledelete(index)}><i class="fa-solid fa-trash"></i></button>
                         </div>
                     ))}
                     <form action='/home' method='post'>
                         <div className="input-group mb-3">
                             <input type="text" className="form-control note-input" placeholder="Write something" />
-                            <button className="btn btn-light add-btn" type="button" id="button-addon2">+</button>
+                            <button className="btn add-btn" type="button" id="button-addon2"><i class="fa-solid fa-plus"></i></button>
                         </div>
                     </form>
                 </ul>
