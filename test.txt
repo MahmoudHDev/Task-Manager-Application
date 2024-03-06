@@ -1,0 +1,55 @@
+passport.use(new LocalStrategy(
+    async function (username, password, done) {
+        await User.findOrCreate({ username: username }, function (err, user) {
+            console.log(user);
+            if (err) {
+                console.log('Error not finding the user ' + err);
+            }
+            if (!user) {
+                console.log('Incorrect username');
+                return done(null, false, { message: 'Incorrect username.' });
+            }
+            bcrypt.compare(password, user.password, function (err, result) {
+                if (err) {
+                    return done(err);
+                }
+                if (result) {
+                    // Passwords match, authentication successful
+                    return done(null, user);
+                } else {
+                    // Passwords do not match
+                    return done(null, false, { message: 'Incorrect password.' });
+                }
+            });
+        });
+    }
+));
+
+
+
+    try {
+        const hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+        User.register({
+            username: req.body.email,
+            fName: req.body.fName,
+            lName: req.body.lName,
+            active: false
+        }, hashedPassword, (err, user) => {
+            if (err) {
+                console.log(err)
+                res.send({ success: false, errorMessage: err })
+            }
+            const authenticate = User.authenticate('local');
+
+            authenticate('username', hashedPassword, (err, result) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    res.send({ success: true })
+                    console.log("Redirect the use ")
+                }
+            })
+        })
+    } catch (error) {
+        console.log("Error has been occured when hashin password")
+    }

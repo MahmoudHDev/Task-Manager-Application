@@ -13,10 +13,6 @@ const Home = () => {
     { title: 'Task2', strikeThrough: false },
     { title: 'Task3', strikeThrough: false }]
 
-
-
-
-
     const homeURI = 'http://localhost:9000/home';
     const state = useLocation();         // receiving component from use navigator 
     const [selectedItemIndex, setSelectedItemIndex] = useState(null);
@@ -33,7 +29,7 @@ const Home = () => {
 
     useEffect(() => {
         //Runs only on the first render
-
+        console.log(state.state)
         setUserName(state.state.fName);
         const fetchListArr = async () => {
             console.log("Fetching")

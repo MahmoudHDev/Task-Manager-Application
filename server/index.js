@@ -34,7 +34,10 @@ mongoose.connect('mongodb://127.0.0.1:27017/UserTasks');
 // 3- Schemas
 const UserSchema = new mongoose.Schema({
     userID: String,
-
+    username:String,
+    password:String,
+    fName:String,
+    lName:String
 });
 
 const UserDocsSchema = new mongoose.Schema({
@@ -174,4 +177,3 @@ app.listen(port, () => {
     console.log("App Started listening")
     console.log(uuidv4());
 });
-
